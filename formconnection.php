@@ -10,10 +10,14 @@ error_reporting(E_ALL);
 $server = "testapptahira-server.mysql.database.azure.com"; 
 $database = "testapptahira-database"; 
 $username = "eopjxwasip"; 
-$password = "@bajwa123456789"; 
+$password = "@bajwa489"; 
 
-// Create connection
-$conn = new mysqli($server, $username, $password, $database);
+$con = mysqli_init();
+mysqli_ssl_set($con,NULL,NULL, "{path to CA cert}", NULL, NULL);
+mysqli_real_connect($conn, $server, $username, $password, $database, 3306, MYSQLI_CLIENT_SSL);
+if ($conn->connect_error) {
+	die("connection failed.". $conn->connect_error);
+}
 
 // Check connection
 if ($conn->connect_error) {

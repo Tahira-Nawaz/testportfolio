@@ -10,11 +10,13 @@
 $server = "tahira-sql-server.database.windows.net"; // Azure SQL server name
 $database = "test-database"; // Your database name
 $username = "tahira"; // Your SQL server username
-$password = "@bajwa123456789"; // Your SQL server password
+$password = "@bajwa489"; // Your SQL server password
 
 // Create a connection
-$conn = new mysqli($server, $username, $password, $database);
-
+// $conn = new mysqli($server, $username, $password, $database);
+$con = mysqli_init();
+mysqli_ssl_set($con,NULL,NULL, "{path to CA cert}", NULL, NULL);
+mysqli_real_connect($conn, $server, $username, $password, $database, 3306, MYSQLI_CLIENT_SSL);
 if ($conn->connect_error) {
 	die("connection failed.". $conn->connect_error);
 }
