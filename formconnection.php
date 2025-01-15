@@ -9,7 +9,7 @@ error_reporting(E_ALL);
 // Database connection details
 $server = "testapptahira-server.mysql.database.azure.com"; 
 $database = "testapptahira-database"; 
-$username = "tahira"; 
+$username = "eopjxwasip"; 
 $password = "@bajwa123456789"; 
 
 // Create connection
