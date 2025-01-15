@@ -2,6 +2,11 @@
 <body align="center">
 
 <?php
+// Enable error reporting
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Database connection details
 $server = "tahira-sql-server.database.windows.net"; 
 $database = "test-database"; 
 $username = "tahira"; 
