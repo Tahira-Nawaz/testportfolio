@@ -12,11 +12,17 @@ $database = "tahira-sql-database";
 $username = "tahira"; 
 $password = "@bajwa489"; 
 
+// Set SSL certificate path
+$ssl_ca_path = "DigiCertGlobalRootCA.crt.pem";
+
 // Initialize the MySQL connection
 $con = mysqli_init();
 
-// Try to connect without SSL
-if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306)) {
+// Set SSL options
+mysqli_ssl_set($con, NULL, NULL, $ssl_ca_path, NULL, NULL);
+
+// Try to connect using SSL
+if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306, NULL, MYSQLI_CLIENT_SSL)) {
     die("Connection failed: " . mysqli_connect_error());
 } else {
     echo "Connection successful.<br>";
