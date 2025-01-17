@@ -7,26 +7,27 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Database connection details
-$server = "tahira-sql-server.database.windows.net"; 
+$server = "tcp:tahira-sql-server.database.windows.net,1433"; 
 $database = "tahira-sql-database"; 
 $username = "tahira"; 
 $password = "@bajwa489"; 
 
-// Initialize the MySQL connection
-$con = mysqli_init();
+// Connection options for SQL Server
+$connectionInfo = array( "Database"=>$database, "UID"=>$username, "PWD"=>$password);
+$con = sqlsrv_connect( $server, $connectionInfo );
 
-// Try to connect without SSL
-if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306)) {
-    die("Connection failed: " . mysqli_connect_error());
+// Check if the connection was successful
+if( !$con ) {
+    die( print_r(sqlsrv_errors(), true));
 } else {
     echo "Connection successful.<br>";
 }
 
 // Validate POST data
-$Fname = isset($_POST['First_name']) ? mysqli_real_escape_string($con, $_POST['First_name']) : '';
-$F = isset($_POST['Email_id']) ? mysqli_real_escape_string($con, $_POST['Email_id']) : '';
-$E = isset($_POST['Telephone_Number']) ? mysqli_real_escape_string($con, $_POST['Telephone_Number']) : '';
-$R = isset($_POST['comments']) ? mysqli_real_escape_string($con, $_POST['comments']) : '';
+$Fname = isset($_POST['First_name']) ? sqlsrv_escape_string($con, $_POST['First_name']) : '';
+$F = isset($_POST['Email_id']) ? sqlsrv_escape_string($con, $_POST['Email_id']) : '';
+$E = isset($_POST['Telephone_Number']) ? sqlsrv_escape_string($con, $_POST['Telephone_Number']) : '';
+$R = isset($_POST['comments']) ? sqlsrv_escape_string($con, $_POST['comments']) : '';
 
 // Check if form data is empty
 if (empty($Fname) || empty($F) || empty($E) || empty($R)) {
@@ -44,24 +45,18 @@ echo "Comments: " . $R . "<br><br>";
 
 // Insert data into the database using prepared statements
 $sql = "INSERT INTO formas3 (First_name, Email_id, Telephone_Number, comments) VALUES (?, ?, ?, ?)";
-$stmt = $con->prepare($sql);
+$params = array($Fname, $F, $E, $R);
+$stmt = sqlsrv_query( $con, $sql, $params);
 
 if ($stmt === false) {
-    echo "Error preparing statement: " . $con->error . "<br>";
-    exit;
-}
-
-$stmt->bind_param("ssss", $Fname, $F, $E, $R);
-
-if ($stmt->execute()) {
-    echo "<h2>Kindly Confirm your details👀</h2>Thanks...!<br>";
+    echo "Error inserting into table: " . print_r(sqlsrv_errors(), true) . "<br>";
 } else {
-    echo "Error inserting into table: " . $stmt->error . "<br>";
+    echo "<h2>Kindly Confirm your details👀</h2>Thanks...!<br>";
 }
 
 // Close the statement and connection
-$stmt->close();
-$con->close();
+sqlsrv_free_stmt($stmt);
+sqlsrv_close($con);
 
 ?>
 </body>
