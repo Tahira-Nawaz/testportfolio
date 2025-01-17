@@ -13,7 +13,7 @@ $username = "tahira";
 $password = "@bajwa489"; 
 
 // Set SSL certificate path
-$ssl_ca_path = "DigiCertGlobalRootCA.crt.pem";
+// $ssl_ca_path = "DigiCertGlobalRootCA.crt.pem";
 
 // Initialize the MySQL connection
 $con = mysqli_init();
@@ -21,12 +21,20 @@ $con = mysqli_init();
 // Set SSL options
 mysqli_ssl_set($con, NULL, NULL, $ssl_ca_path, NULL, NULL);
 
-// Try to connect using SSL
-if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306, NULL, MYSQLI_CLIENT_SSL)) {
+// // Try to connect using SSL
+// if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306, NULL, MYSQLI_CLIENT_SSL)) {
+//     die("Connection failed: " . mysqli_connect_error());
+// } else {
+//     echo "Connection successful.<br>";
+// }
+
+// Try to connect without SSL
+if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306)) {
     die("Connection failed: " . mysqli_connect_error());
 } else {
     echo "Connection successful.<br>";
 }
+
 
 // Validate POST data
 $Fname = isset($_POST['First_name']) ? mysqli_real_escape_string($con, $_POST['First_name']) : '';
