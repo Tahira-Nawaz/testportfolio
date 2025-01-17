@@ -24,10 +24,10 @@ if( !$con ) {
 }
 
 // Validate POST data
-$Fname = isset($_POST['First_name']) ? sqlsrv_escape_string($con, $_POST['First_name']) : '';
-$F = isset($_POST['Email_id']) ? sqlsrv_escape_string($con, $_POST['Email_id']) : '';
-$E = isset($_POST['Telephone_Number']) ? sqlsrv_escape_string($con, $_POST['Telephone_Number']) : '';
-$R = isset($_POST['comments']) ? sqlsrv_escape_string($con, $_POST['comments']) : '';
+$Fname = isset($_POST['First_name']) ? $_POST['First_name'] : '';
+$F = isset($_POST['Email_id']) ? $_POST['Email_id'] : '';
+$E = isset($_POST['Telephone_Number']) ? $_POST['Telephone_Number'] : '';
+$R = isset($_POST['comments']) ? $_POST['comments'] : '';
 
 // Check if form data is empty
 if (empty($Fname) || empty($F) || empty($E) || empty($R)) {
