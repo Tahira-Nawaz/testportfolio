@@ -7,9 +7,9 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Database connection details
-$server = "testapptahira-server.mysql.database.azure.com"; 
-$database = "testapptahira-database"; 
-$username = "eopjxwasip"; 
+$server = "tahira-sql-server.database.windows.net"; 
+$database = "tahira-sql-database"; 
+$username = "tahira"; 
 $password = "@bajwa489"; 
 
 // Set SSL certificate path
