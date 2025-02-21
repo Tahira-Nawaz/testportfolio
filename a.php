@@ -10,17 +10,39 @@ error_reporting(E_ALL);
 $server = "tcp:tahira-sql-server.mysql.database.azure.com,1433"; 
 $database = "tahira-sql-database"; 
 $username = "pxxjxlukdz"; 
-$password = "AjPcwACQk$vk2b56"; 
+$password = "@bajwa123456789"; 
 
 // Connection options for SQL Server
 $connectionInfo = array( "Database"=>$database, "UID"=>$username, "PWD"=>$password);
-$con = sqlsrv_connect( $server, $connectionInfo );
+$con = sqlsrv_connect($server, $connectionInfo);
 
 // Check if the connection was successful
-if( !$con ) {
-    die( print_r(sqlsrv_errors(), true));
+if (!$con) {
+    die("Connection failed: " . print_r(sqlsrv_errors(), true));
 } else {
     echo "Connection successful.<br>";
+}
+
+// Create table if it doesn't exist
+$tableCreateQuery = "
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'formas3')
+BEGIN
+    CREATE TABLE formas3 (
+        ID INT IDENTITY(1,1) PRIMARY KEY,
+        First_name NVARCHAR(100) NOT NULL,
+        Email_id NVARCHAR(255) NOT NULL,
+        Telephone_Number NVARCHAR(20) NOT NULL,
+        comments NVARCHAR(MAX) NOT NULL,
+        created_at DATETIME DEFAULT GETDATE()
+    );
+END;
+";
+
+$tableCreateStmt = sqlsrv_query($con, $tableCreateQuery);
+if ($tableCreateStmt === false) {
+    die("Error creating table: " . print_r(sqlsrv_errors(), true));
+} else {
+    echo "Table check/creation successful.<br>";
 }
 
 // Validate POST data
@@ -46,7 +68,7 @@ echo "Comments: " . $R . "<br><br>";
 // Insert data into the database using prepared statements
 $sql = "INSERT INTO formas3 (First_name, Email_id, Telephone_Number, comments) VALUES (?, ?, ?, ?)";
 $params = array($Fname, $F, $E, $R);
-$stmt = sqlsrv_query( $con, $sql, $params);
+$stmt = sqlsrv_query($con, $sql, $params);
 
 if ($stmt === false) {
     echo "Error inserting into table: " . print_r(sqlsrv_errors(), true) . "<br>";
