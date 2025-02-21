@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // Database connection details
 $server = "tcp:tahira-sql-server.database.windows.net,1433"; 
 $database = "tahira-sql-database"; 
-$username = "tahira"; 
-$password = "@bajwa489"; 
+$username = "pxxjxlukdz"; 
+$password = "AjPcwACQk$vk2b56"; 
 
 // Connection options for SQL Server
 $connectionInfo = array( "Database"=>$database, "UID"=>$username, "PWD"=>$password);
