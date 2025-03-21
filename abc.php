@@ -1,157 +1,77 @@
-
-
 <html>
-<body align="center" >
-
-
+<body align="center">
 
 <?php
-// Azure SQL Database connection details
-$server = "tahira-sql-server.database.windows.net"; // Azure SQL server name
-$database = "test-database"; // Your database name
-$username = "tahira"; // Your SQL server username
-$password = "@bajwa489"; // Your SQL server password
+// Enable error reporting
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-// Create a connection
-// $conn = new mysqli($server, $username, $password, $database);
-$con = mysqli_init();
-mysqli_ssl_set($con,NULL,NULL, "{path to CA cert}", NULL, NULL);
-mysqli_real_connect($conn, $server, $username, $password, $database, 3306, MYSQLI_CLIENT_SSL);
-if ($conn->connect_error) {
-	die("connection failed.". $conn->connect_error);
+// Database connection details
+$server = "my-mysql";
+$database = "testdb";
+$username = "myuser";
+$password = "mypassword";
+$port = 3306;
+
+// Establish MySQL connection
+$con = new mysqli($server, $username, $password, $database, $port);
+
+// Check connection
+if ($con->connect_error) {
+    die("❌ Connection failed: " . $con->connect_error);
+} else {
+    echo "✅ MySQL Connection Successful!<br>";
 }
 
-echo "database connected successfully."."<br>";
-/*
-$sql="CREATE TABLE formas(
-    First_name varchar(255), Last_name varchar(255), Email_id varchar(255), Telephone_Number int, Website_url varchar(255), Select_department varchar(255),  File varchar(555), comments varchar(500)) ";
-if($conn->query($sql) === TRUE)
-{
+// Create table if it doesn't exist
+$tableCreateQuery = "CREATE TABLE IF NOT EXISTS formas3 (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    First_name VARCHAR(100) NOT NULL,
+    Email_id VARCHAR(255) NOT NULL,
+    Telephone_Number VARCHAR(20) NOT NULL,
+    comments TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
 
-	echo "<h2>TABLE</h2>table is created successfully."."<br>";
-}
-else
-{
-
-	echo" table is not created successfully.".$conn->error;
-} 
-
-*/
-
-echo "<h2>Latest Registration</h2>";
-$Fname=$_POST["First_name"];
-echo "First_name is:".$Fname."<br>";
-
-$F=$_POST["Email_id"];
-echo "Email_id is:".$F."<br>";
-$E=$_POST["Telephone_Number"];
-echo "Telephone_Number is:".$E."<br>";
-
-
-
-	
-
-
-$R=$_POST["comments"];
-echo "comments is:".$R."<br><br>";
-
-$sql=" INSERT INTO formas(First_name,  Email_id, Telephone_Number, comments)
-    VALUES( '$Fname' ,  '$F','$E','$R')";
-if($conn->query($sql) === TRUE)
-{
-
-	echo "<h2>INSERT</h2>insert in table  successfully."."<br>";
-}
-else
-{
-
-	echo" insert in table is not  successfully.".$conn->error;
+if ($con->query($tableCreateQuery) === TRUE) {
+    echo "✅ Table 'formas3' checked/created successfully.<br>";
+} else {
+    die("❌ Error creating table: " . $con->error);
 }
 
-$sql="SELECT First_name,  Email_id, Telephone_Number, comments FROM formas";
-$result = $conn->query($sql);
+// Validate POST data
+$Fname = $_POST['First_name'] ?? '';
+$F = $_POST['Email_id'] ?? '';
+$E = $_POST['Telephone_Number'] ?? '';
+$R = $_POST['comments'] ?? '';
 
-if ($result->num_rows>0) {
-	while ($row=$result->fetch_assoc()) {
-		echo"<br><h2>SELECT</h2><br>"."First_name: ".$row["First_name"]."<br>"."Email_id: ".$row["Email_id"]."<br>"."Telephone_Number:".$row["Telephone_Number"]."<br>"."comments:".$row["comments"]."<br><hr>";
-
-	}
-}
-else
-{
-	echo "0 result";
+// Check if form data is empty
+if (empty($Fname) || empty($F) || empty($E) || empty($R)) {
+    echo "⚠️ All fields are required. Please fill out the form correctly.<br>";
+    exit;
 }
 
+// Insert data using prepared statement
+$sql = "INSERT INTO formas3 (First_name, Email_id, Telephone_Number, comments) VALUES (?, ?, ?, ?)";
+$stmt = $con->prepare($sql);
+$stmt->bind_param("ssss", $Fname, $F, $E, $R);
 
-
-/*
-
-$sql="SELECT Firstname, lastname,  fathername, email,contact_no, DOB , qualification FROM form1";
-$result = $conn->query($sql);
-
-if ($result->num_rows>0) {
-	while ($row=$result->fetch_assoc()) {
-		echo"<br><h2>SELECT</h2><br>"."First_name: ".$row["Firstname"]."<br>"."Last_name:".$row["lastname"]."<br>"."Father_name: ".$row["fathername"]."<br>"."Email_id:".$row["email"]."<br>"."Contact_no:".$row["contact_no"]."<br>"."DOB:".$row["DOB"]."<br>"."Qualification:".$row["qualification"]."<br><hr>";
-
-	}
-}
-else
-{
-	echo "0 result";
-}
-
-
-$sql=" INSERT INTO example(ID , Firstname, lastname, address)
-    VALUES('1' , 'alizy' , 'bajwa', 'lahore')";
-if($conn->query($sql) === TRUE)
-{
-
-	echo "<h2>INSERT</h2>insert in table  successfully."."<br>";
-}
-else
-{
-
-	echo" insert in table is not  successfully.".$conn->error;
+if ($stmt->execute()) {
+    echo "✅ Your response is submitted successfully!<br>";
+    echo "<h2>Your Contact Information</h2>";
+    echo "Name: " . htmlspecialchars($Fname) . "<br>";
+    echo "Email: " . htmlspecialchars($F) . "<br>";
+    echo "Telephone Number: " . htmlspecialchars($E) . "<br>";
+    echo "Comments: " . htmlspecialchars($R) . "<br><br>";
+    echo "<h2>Kindly Confirm your details👀</h2>Thanks...!<br>";
+} else {
+    echo "❌ Error inserting into table: " . $stmt->error . "<br>";
 }
 
-$sql1="SELECT ID, Firstname, lastname, address FROM example";
-$result = $conn->query($sql1);
-if ($result->num_rows>0) {
-	while ($row=$result->fetch_assoc()) {
-		echo"<br><h2>SELECT</h2>"."ID: ".$row["ID"]."<br>"."First name".$row["Firstname"]."<br>"."Last name".$row["lastname"]."<br>"."Address".$row["address"]."<br><hr>";
-
-	}
-}
-else
-{
-	echo "0 result";
-}
-
-$sql2="UPDATE example SET `ID`='6',`Firstname`='sairaaaa',`lastname`='Bajwa',`address`='lahore' WHERE `ID`='4'" ;
-if($conn->query($sql2) === TRUE)
-{
-
-	echo "<h2>UPDATE</h2>Update in table  successfully."."<br>";
-}
-else
-{
-
-	echo" Update in table is not  successfully.".$conn->error;
-}
-
-$sql3="DELETE FROM example WHERE `ID` ='0' ";
-if($conn->query($sql3) === TRUE)
-{
-
-	echo "<h2>DELETE</h2>delete in table  successfully."."<br>";
-}
-else
-{
-
-	echo" delete in table is not  successfully.".$conn->error;
-}*/
-$conn->close()
-
+// Close statement and connection
+$stmt->close();
+$con->close();
 ?>
+
 </body>
 </html>
