@@ -7,10 +7,10 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Database connection details
-$server = "my-mysql";
-$database = "testdb";
-$username = "myuser";
-$password = "mypassword";
+$server = "tcp:tahira-server.mysql.database.azure.com,1433";
+$database = "tahira-database";
+$username = "tahira";
+$password = "@bajwa123456789";
 $port = 3306;
 
 // Establish MySQL connection
