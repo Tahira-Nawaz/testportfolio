@@ -70,13 +70,13 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-
+        
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_62FE3B00E6CE4A55A44E060C1D261D92 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_858F0A885C834A099BD067EC82CC9BEE }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E9CE4C0F934045DDA27A991AD0C850B7 }}
+          client-id: ${{ secrets.AZ_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZ_TENANT_ID }}
+          subscription-id: ${{ secrets.AZ_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group if not exists
         run: |
