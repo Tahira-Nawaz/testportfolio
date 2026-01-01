@@ -21,6 +21,10 @@ on:
         description: 'Azure region'
         required: true
         default: 'westus2'
+      plan_name:
+        description: 'Azure App Service Plan name'
+        required: true
+        default: 'webapp-b1-plan'
 
 jobs:
   build:
@@ -60,7 +64,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write #Required for GitHub OIDC, optional here if using SP
 
     steps:
       - name: Download artifact from build job
@@ -70,6 +74,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -83,7 +88,19 @@ jobs:
           az group show --name ${{ github.event.inputs.resource_group }} || \
           az group create --name ${{ github.event.inputs.resource_group }} --location ${{ github.event.inputs.location }}
 
-      - name: Create Web App if not exists (B1 Plan)
+      - name: Create App Service Plan if not exists (B1)
+        run: |
+          az appservice plan show \
+            --name ${{ github.event.inputs.plan_name }} \
+            --resource-group ${{ github.event.inputs.resource_group }} || \
+          az appservice plan create \
+            --name ${{ github.event.inputs.plan_name }} \
+            --resource-group ${{ github.event.inputs.resource_group }} \
+            --location ${{ github.event.inputs.location }} \
+            --sku B1 \
+            --is-linux
+
+      - name: Create Web App if not exists
         run: |
           az webapp show \
             --name ${{ github.event.inputs.app_name }} \
@@ -91,12 +108,10 @@ jobs:
           az webapp create \
             --name ${{ github.event.inputs.app_name }} \
             --resource-group ${{ github.event.inputs.resource_group }} \
-            --plan <your-app-service-plan> \
-            --runtime "PHP|8.2" \
-            --sku B1 \
-            --location ${{ github.event.inputs.location }}
+            --plan ${{ github.event.inputs.plan_name }} \
+            --runtime "PHP|8.2"
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
