@@ -12,7 +12,15 @@ on:
       app_name:
         description: 'Azure Web App name'
         required: true
-        default: 'tahirra-test-app'
+        default: 'tahira-test-app'
+      resource_group:
+        description: 'Azure Resource Group name'
+        required: true
+        default: 'webapp-rg'
+      location:
+        description: 'Azure region'
+        required: true
+        default: 'westus2'
 
 jobs:
   build:
@@ -70,17 +78,23 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_858F0A885C834A099BD067EC82CC9BEE }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E9CE4C0F934045DDA27A991AD0C850B7 }}
 
+      - name: Create Resource Group if not exists
+        run: |
+          az group show --name ${{ github.event.inputs.resource_group }} || \
+          az group create --name ${{ github.event.inputs.resource_group }} --location ${{ github.event.inputs.location }}
+
       - name: Create Web App if not exists (B1 Plan)
         run: |
           az webapp show \
             --name ${{ github.event.inputs.app_name }} \
-            --resource-group <your-resource-group> || \
+            --resource-group ${{ github.event.inputs.resource_group }} || \
           az webapp create \
             --name ${{ github.event.inputs.app_name }} \
-            --resource-group <your-resource-group> \
+            --resource-group ${{ github.event.inputs.resource_group }} \
             --plan <your-app-service-plan> \
             --runtime "PHP|8.2" \
-            --sku B1
+            --sku B1 \
+            --location ${{ github.event.inputs.location }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
