@@ -29,6 +29,27 @@ if (!mysqli_real_connect($con, $server, $username, $password, $database, 3306, N
     echo "Connection successful.<br>";
 }
 
+// ----- Add table check here -----
+$table_check = $con->query("SHOW TABLES LIKE 'formas3'");
+if ($table_check->num_rows == 0) {
+    $create_table_sql = "
+    CREATE TABLE formas3 (
+        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        First_name VARCHAR(100) NOT NULL,
+        Email_id VARCHAR(100) NOT NULL,
+        Telephone_Number VARCHAR(50) NOT NULL,
+        comments TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB;
+    ";
+    if ($con->query($create_table_sql) === TRUE) {
+        echo "Table 'formas3' created successfully.<br>";
+    } else {
+        die("Error creating table: " . $con->error);
+    }
+}
+// -------------------------------
+
 // Validate POST data
 $Fname = isset($_POST['First_name']) ? mysqli_real_escape_string($con, $_POST['First_name']) : '';
 $F = isset($_POST['Email_id']) ? mysqli_real_escape_string($con, $_POST['Email_id']) : '';
