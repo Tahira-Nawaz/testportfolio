@@ -7,10 +7,11 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Database connection details
-$server = "tahira-sql-server.database.windows.net"; 
-$database = "tahira-sql-database"; 
-$username = "tahira"; 
-$password = "@bajwa489"; 
+$server = "tahira-server.mysql.database.azure.com";
+$database = "tahira-database";
+$username = "tahira";
+$password = "@bajwa123456789";
+
 
 // Set SSL certificate path
 $ssl_ca_path = "DigiCertGlobalRootCA.crt.pem";
